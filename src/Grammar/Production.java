@@ -1,8 +1,5 @@
 package Grammar;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Production {
     private String lhs;
     private String rhs;
@@ -24,7 +21,5 @@ public class Production {
     public String toString() {
         return lhs + " -> " + rhs;
     }
-
-
 
 }

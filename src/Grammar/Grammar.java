@@ -39,6 +39,18 @@ public class Grammar {
         }
     }
 
+    public String getStart() {
+        return startSymbol;
+    }
+
+    public Set<String> getNonTerminals() {
+        return nonTerminals;
+    }
+
+    public Set<String> getTerminals() {
+        return terminals;
+    }
+
     public void printNonTerminals() {
         System.out.println("Non-terminals: " + nonTerminals);
     }
@@ -65,4 +77,3 @@ public class Grammar {
     }
 
 }
-
