@@ -30,30 +30,41 @@ public class Grammar {
                 NonTerminal lhs = new NonTerminal(parts[0].trim());
                 String rhs = parts[1].trim();
 
-                // spliting rhs into symbols
+                // spliting rhs into symbols and adding the rhs to the
+                // Splitting rhs into symbols and adding the rhs to the production
+                List<Symbol> production = new ArrayList<>();
+                String nonTermName = splitLine[0].strip();
                 var symbolList = parts[1].strip().split(" ");
                 for (String symbolName : symbolList) {
                     Symbol symbol = null;
-                    if (symbolName.equals("ε"))
+                    if (symbolName.equals("ε")) {
                         symbol = new Epsilon();
-                    if (symbol == null) {
-                        symbol = this.nonTerminals(symbolName);
-                        if (symbol == null)
-                            symbol = this.terminals(symbolName);
+                    } else {
+                        if (nonTerminals.contains(symbolName)) {
+                            // Symbol is a nonterminal
+                            symbol = new NonTerminal(symbolName);
+                        } else if (terminals.contains(symbolName)) {
+                            // Symbol is a terminal
+                            symbol = new Terminal(symbolName);
+                        }
+                        // Handle the case when the symbol is neither a nonterminal nor a terminal
                     }
-                    production.add(symbol);
+
+                    if (symbol != null) {
+                        production.add(symbol);
+                    } else {
+                        // Handle the case when the symbol is not recognized
+                        System.out.println("Unrecognized symbol: " + symbolName);
+                    }
                 }
+
                 this.nonTerminals.get(nonTermName).productions.add(production);
             }
             productions.computeIfAbsent(String.valueOf(lhs), k -> new ArrayList<>())
                     .add(String.valueOf(new Production(lhs.getSymbol(), rhs)));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    }catch(
-
-    IOException e)
-    {
-        e.printStackTrace();
-    }
     }
 
     public String getStartSymbol() {

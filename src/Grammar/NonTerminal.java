@@ -1,7 +1,11 @@
 package Grammar;
 
-public class NonTerminal implements Symbol{
+import java.util.ArrayList;
+import java.util.List;
+
+public class NonTerminal implements Symbol {
     private String symbol;
+    List<List<Symbol>> productions = new ArrayList<>();
 
     public NonTerminal(String symbol) {
         this.symbol = symbol;
@@ -9,6 +13,10 @@ public class NonTerminal implements Symbol{
 
     public String getSymbol() {
         return symbol;
+    }
+
+    public List<List<Symbol>> getProductions() {
+        return productions;
     }
 
     @Override
