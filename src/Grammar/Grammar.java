@@ -1,12 +1,10 @@
 package Grammar;
 
-import java.io.BufferedReader;
-
 import java.io.*;
 import java.util.*;
 
 public class Grammar {
-    private Set<String> nonTerminals;
+    private Set<NonTerminal> nonTerminals;
     private Set<String> terminals;
     private Map<String, List<String>> productions;
     private String startSymbol;
@@ -20,7 +18,7 @@ public class Grammar {
     public void readGrammarFromFile(String filePath) {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             Arrays.stream(br.readLine().split(" "))
-                    .forEach(symbol -> nonTerminals.add(String.valueOf(new NonTerminal(symbol))));
+                    .forEach(symbol -> nonTerminals.add(new NonTerminal(symbol)));
             Arrays.stream(br.readLine().split(" "))
                     .forEach(symbol -> terminals.add(String.valueOf(new Terminal(symbol))));
 
@@ -31,24 +29,51 @@ public class Grammar {
                 String[] parts = line.split("->");
                 NonTerminal lhs = new NonTerminal(parts[0].trim());
                 String rhs = parts[1].trim();
-                productions.computeIfAbsent(String.valueOf(lhs), k -> new ArrayList<>())
-                        .add(String.valueOf(new Production(lhs.getSymbol(), rhs)));
+
+                // spliting rhs into symbols
+                var symbolList = parts[1].strip().split(" ");
+                for (String symbolName : symbolList) {
+                    Symbol symbol = null;
+                    if (symbolName.equals("ε"))
+                        symbol = new Epsilon();
+                    if (symbol == null) {
+                        symbol = this.nonTerminals(symbolName);
+                        if (symbol == null)
+                            symbol = this.terminals(symbolName);
+                    }
+                    production.add(symbol);
+                }
+                this.nonTerminals.get(nonTermName).productions.add(production);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            productions.computeIfAbsent(String.valueOf(lhs), k -> new ArrayList<>())
+                    .add(String.valueOf(new Production(lhs.getSymbol(), rhs)));
         }
+    }catch(
+
+    IOException e)
+    {
+        e.printStackTrace();
+    }
     }
 
-    public String getStart() {
+    public String getStartSymbol() {
         return startSymbol;
     }
 
-    public Set<String> getNonTerminals() {
+    public Set<NonTerminal> getNonTerminals() {
         return nonTerminals;
     }
 
     public Set<String> getTerminals() {
         return terminals;
+    }
+
+    public NonTerminal GetNonterminalBySymbol(String symbol) {
+        for (var nonTerminal : nonTerminals) {
+            if (nonTerminal.getSymbol() == symbol)
+                return nonTerminal;
+        }
+        return null;
     }
 
     public void printNonTerminals() {

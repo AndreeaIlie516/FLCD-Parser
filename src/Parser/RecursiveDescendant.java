@@ -3,6 +3,7 @@ package Parser;
 import Grammar.Grammar;
 import Grammar.NonTerminal;
 import Grammar.Symbol;
+import Parser.ModelConfiguration.StateType;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ import static Parser.ModelConfiguration.*;
 public class RecursiveDescendant {
 
     public static void recursiveDescendant(Grammar G, String w) {
-        Element S = new Element(G.getNonTerminals().get(G.getStart().getSymbol()), 0);
+        Element S = new Element(G.GetNonterminalBySymbol(G.getStartSymbol()), 0);
         StackWrapper workingStack = new StackWrapper();
         StackWrapper inputStack = new StackWrapper();
         inputStack.add(S);
@@ -75,12 +76,12 @@ public class RecursiveDescendant {
 
     static void Advance(ModelConfiguration config) {
         Element terminal = config.getInputStack().pop();
-        config.index++;
+        config.incIndex();
         config.getWorkingStack().add(terminal);
     }
 
     static void MomentaryInsuccess(ModelConfiguration config) {
-        config.state = StateType.b;
+        config.setState(StateType.b);
     }
 
     static void AnotherTry(ModelConfiguration config, Element start) {
@@ -91,7 +92,7 @@ public class RecursiveDescendant {
         boolean isLastProduction = nonTerm.getProductions().size() == element.getIndex() + 1;
 
         if (!isLastProduction) {
-            config.state = StateType.q;
+            config.setState(StateType.q);
             element.incIndex();
 
             List<Symbol> nextProd = element.getProductionAtIndex();
@@ -100,8 +101,8 @@ public class RecursiveDescendant {
             config.getInputStack().popK(prod.size());
             config.getInputStack().addAllReverse(Element.symbolsToElements(nextProd));
         } else {
-            if (config.index == 0 && nonTerm == start.getSymbol()) {
-                config.state = StateType.e;
+            if (config.getIndex() == 0 && nonTerm == start.getSymbol()) {
+                config.setState(StateType.e);
                 return;
             }
             config.getInputStack().popK(prod.size());
@@ -112,11 +113,11 @@ public class RecursiveDescendant {
 
     static void Back(ModelConfiguration config) {
         Element terminal = config.getWorkingStack().pop();
-        config.index--;
+        config.decIndex();
         config.getInputStack().add(terminal);
     }
 
     static void Success(ModelConfiguration config) {
-        config.state = StateType.f;
+        config.setState(StateType.f);
     }
 }

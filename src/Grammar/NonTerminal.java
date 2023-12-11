@@ -1,6 +1,6 @@
 package Grammar;
 
-public class NonTerminal {
+public class NonTerminal implements Symbol{
     private String symbol;
 
     public NonTerminal(String symbol) {
