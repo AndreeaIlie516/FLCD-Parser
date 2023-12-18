@@ -1,5 +1,7 @@
 package Grammar;
 
+import java.util.List;
+
 public class Production {
     private String lhs;
     private String rhs;
@@ -17,9 +19,13 @@ public class Production {
         return rhs;
     }
 
+    public List<String> getRHSList() {
+        List<String> rhs = List.of(this.rhs.split(" "));
+        return rhs;
+    }
+
     @Override
     public String toString() {
         return lhs + " -> " + rhs;
     }
-
 }

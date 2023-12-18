@@ -1,6 +1,6 @@
 package Grammar;
 
-public class Terminal implements Symbol{
+public class Terminal {
     private String symbol;
 
     public Terminal(String symbol) {

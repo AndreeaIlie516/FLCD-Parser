@@ -1,12 +1,14 @@
 package Grammar;
 
+import java.io.BufferedReader;
+
 import java.io.*;
 import java.util.*;
 
 public class Grammar {
-    private Set<NonTerminal> nonTerminals;
+    private Set<String> nonTerminals;
     private Set<String> terminals;
-    private Map<String, List<String>> productions;
+    private Map<String, List<List<String>>> productions;
     private String startSymbol;
 
     public Grammar() {
@@ -18,89 +20,59 @@ public class Grammar {
     public void readGrammarFromFile(String filePath) {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             Arrays.stream(br.readLine().split(" "))
-                    .forEach(symbol -> nonTerminals.add(new NonTerminal(symbol)));
+                    .forEach(symbol -> nonTerminals.add(symbol)); // Changed
             Arrays.stream(br.readLine().split(" "))
-                    .forEach(symbol -> terminals.add(String.valueOf(new Terminal(symbol))));
+                    .forEach(symbol -> terminals.add(symbol)); // Changed
 
-            startSymbol = String.valueOf(new NonTerminal(br.readLine()));
+            startSymbol = br.readLine().trim(); // Changed
 
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split("->");
-                NonTerminal lhs = new NonTerminal(parts[0].trim());
-                String rhs = parts[1].trim();
+                String lhs = parts[0].trim(); // Changed
+                String[] rhsParts = parts[1].trim().split("\\s+"); // Split RHS into parts
+                List<String> rhs = Arrays.asList(rhsParts); // Create a list of RHS parts
 
-                // spliting rhs into symbols and adding the rhs to the
-                // Splitting rhs into symbols and adding the rhs to the production
-                List<Symbol> production = new ArrayList<>();
-                String nonTermName = splitLine[0].strip();
-                var symbolList = parts[1].strip().split(" ");
-                for (String symbolName : symbolList) {
-                    Symbol symbol = null;
-                    if (symbolName.equals("ε")) {
-                        symbol = new Epsilon();
-                    } else {
-                        if (nonTerminals.contains(symbolName)) {
-                            // Symbol is a nonterminal
-                            symbol = new NonTerminal(symbolName);
-                        } else if (terminals.contains(symbolName)) {
-                            // Symbol is a terminal
-                            symbol = new Terminal(symbolName);
-                        }
-                        // Handle the case when the symbol is neither a nonterminal nor a terminal
-                    }
-
-                    if (symbol != null) {
-                        production.add(symbol);
-                    } else {
-                        // Handle the case when the symbol is not recognized
-                        System.out.println("Unrecognized symbol: " + symbolName);
-                    }
-                }
-
-                this.nonTerminals.get(nonTermName).productions.add(production);
+                productions.computeIfAbsent(lhs, k -> new ArrayList<>()).add(rhs);
             }
-            productions.computeIfAbsent(String.valueOf(lhs), k -> new ArrayList<>())
-                    .add(String.valueOf(new Production(lhs.getSymbol(), rhs)));
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public String getStartSymbol() {
-        return startSymbol;
-    }
-
-    public Set<NonTerminal> getNonTerminals() {
-        return nonTerminals;
-    }
-
-    public Set<String> getTerminals() {
-        return terminals;
-    }
-
-    public NonTerminal GetNonterminalBySymbol(String symbol) {
-        for (var nonTerminal : nonTerminals) {
-            if (nonTerminal.getSymbol() == symbol)
-                return nonTerminal;
-        }
-        return null;
     }
 
     public void printNonTerminals() {
         System.out.println("Non-terminals: " + nonTerminals);
     }
 
+    public Set<String> getNonTerminals() {
+        return nonTerminals;
+    }
+
     public void printTerminals() {
         System.out.println("Terminals: " + terminals);
     }
 
+    public Set<String> getTerminals() {
+        return terminals;
+    }
     public void printProductions() {
         System.out.println("Productions: " + productions);
     }
 
-    public void printProductionsForNonterminal(String nonterminal) {
-        System.out.println("Productions for " + nonterminal + ": " + productions.get(nonterminal));
+    public Map<String, List<List<String>>> getProductions() {
+        return productions;
+    }
+
+    public void printProductionsForNonTerminal(String nonTerminal) {
+        System.out.println("Productions for " + nonTerminal + ": " + productions.get(nonTerminal));
+    }
+
+    public List<List<String>> getProductionsForNonTerminal(String nonTerminal) {
+        return productions.get(nonTerminal);
+    }
+
+    public String getStartSymbol() {
+        return startSymbol;
     }
 
     public boolean isCFG() {
@@ -110,6 +82,14 @@ public class Grammar {
             }
         }
         return true;
+    }
+
+    public boolean isNonTerminal(String element) {
+        return nonTerminals.contains(element);
+    }
+
+    public boolean isTerminal(String element) {
+        return terminals.contains(element);
     }
 
 }
