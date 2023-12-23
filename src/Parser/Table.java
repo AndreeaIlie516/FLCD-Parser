@@ -42,9 +42,6 @@ public class Table {
             int parent = parents.pop();
             int sibling = 0;
 
-            List<List<String>> productions = grammar.getProductionsForNonTerminal(nonTerminal);
-            System.out.println("Index: " + index  + " No of prod: " + productions.size() + "Production: " + productions.get(0) );
-
             List<String> production = grammar.getProductionsForNonTerminal(nonTerminal).get(pair.getSecond());
             for(String elem: production) {
                 Row row = new Row();
