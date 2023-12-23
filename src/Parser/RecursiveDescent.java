@@ -15,7 +15,7 @@ public class RecursiveDescent {
     private StateType state;
 
     enum StateType {
-        q, b, f, e;
+        q, b, f, e
     }
 
     public RecursiveDescent(Grammar grammar, List<String> sequence) {
@@ -68,6 +68,9 @@ public class RecursiveDescent {
         else {
             System.out.println("Sequence Accepted");
             buildStringOfProductions(workingStack);
+            Table table = new Table();
+            table.constructTable(workingStack, grammar);
+            System.out.println(table.toString());
         }
     }
 
